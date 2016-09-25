@@ -229,7 +229,7 @@ class Node(QtWidgets.QGraphicsWidget):
 
     def translate(self, x, y):
         self.prepareConnectionGeometryChange()
-        super(Node, self).translate(x, y)
+        super(Node, self).transform().translate(x, y)
 
 
     # Prior to moving the node, we need to tell the connections to prepare for a geometry change.
@@ -274,14 +274,14 @@ class Node(QtWidgets.QGraphicsWidget):
         roundingY = 10
         roundingX = rect.height() / rect.width() * roundingY
 
-        painter.drawRoundRect(rect, roundingX, roundingY)
+        painter.drawRoundedRect(rect, roundingX, roundingY)
 
         # Title BG
         titleHeight = self.__headerItem.size().height() - 3
 
         painter.setBrush(self.__color.darker(125))
         roundingY = rect.width() * roundingX / titleHeight
-        painter.drawRoundRect(0, 0, rect.width(), titleHeight, roundingX, roundingY)
+        painter.drawRoundedRect(0, 0, rect.width(), titleHeight, roundingX, roundingY)
         painter.drawRect(0, titleHeight * 0.5 + 2, rect.width(), titleHeight * 0.5)
 
         # painter.setPen(self.__linePen)
@@ -296,14 +296,14 @@ class Node(QtWidgets.QGraphicsWidget):
         roundingY = 10
         roundingX = rect.height() / rect.width() * roundingY
 
-        painter.drawRoundRect(rect, roundingX, roundingY)
+        painter.drawRoundedRect(rect, roundingX, roundingY)
 
 
     #########################
     ## Events
 
     def mousePressEvent(self, event):
-        if event.button() is QtCore.Qt.MouseButton.LeftButton:
+        if event.button() == QtCore.Qt.LeftButton:
 
             modifiers = event.modifiers()
             if modifiers == QtCore.Qt.ControlModifier:

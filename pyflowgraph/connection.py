@@ -109,7 +109,7 @@ class Connection(QtWidgets.QGraphicsPathItem):
 
 
     def mousePressEvent(self, event):
-        if event.button() is QtCore.Qt.MouseButton.LeftButton:
+        if event.button() == QtCore.Qt.LeftButton:
             self.__dragging = True
             self._lastDragPoint = self.mapToScene(event.pos())
             event.accept()

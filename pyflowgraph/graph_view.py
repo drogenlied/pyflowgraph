@@ -6,7 +6,7 @@ from   __future__    import unicode_literals
 from   __future__    import absolute_import
 import copy
 
-from   Qt            import QtGui, QtCore, QtWidgets
+from   Qt            import QtGui, QtCore, QtWidgets, QtCompat
 from   six           import string_types
 
 from .node           import Node
@@ -318,7 +318,7 @@ class GraphView(QtWidgets.QGraphicsView):
 
     def moveSelectedNodes(self, delta, emitSignal=True):
         for node in self.__selection:
-            node.translate(delta.x(), delta.y())
+            node.moveBy(delta.x(), delta.y())
 
         if emitSignal:
             self.selectionMoved.emit(self.__selection, delta)
@@ -395,15 +395,14 @@ class GraphView(QtWidgets.QGraphicsView):
 
     def mousePressEvent(self, event):
 
-        if event.button() is QtCore.Qt.MouseButton.LeftButton and self.itemAt(event.pos()) is None:
+        if event.button() == QtCore.Qt.LeftButton and self.itemAt(event.pos()) is None:
             self.beginNodeSelection.emit()
             self._manipulationMode = 1
             self._mouseDownSelection = copy.copy(self.getSelectedNodes())
             self.clearSelection(emitSignal=False)
             self._selectionRect = SelectionRect(graph=self, mouseDownPos=self.mapToScene(event.pos()))
 
-        elif event.button() is QtCore.Qt.MouseButton.MidButton:
-
+        elif event.button() == QtCore.Qt.MiddleButton:
             self.setCursor(QtCore.Qt.OpenHandCursor)
             self._manipulationMode = 2
             self._lastPanPoint = self.mapToScene(event.pos())
@@ -481,7 +480,10 @@ class GraphView(QtWidgets.QGraphicsView):
         bottomRight = xfo.map(self.rect().bottomRight())
         center = ( topLeft + bottomRight ) * 0.5
 
-        zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
+        if QtCompat.__binding__ in ('PyQt5', 'PySide2'):
+           zoomFactor = 1.0 + event.angleDelta().y() * self._mouseWheelZoomRate
+        else:
+            zoomFactor = 1.0 + event.delta() * self._mouseWheelZoomRate
 
         transform = self.transform()
 
